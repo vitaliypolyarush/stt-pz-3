@@ -26,7 +26,7 @@ function App() {
                     {Object.keys(list).map(key =>
                         <li className="app-list-item" key={key}><b>{key}</b>:
                             <a className="app-link"
-                               href="{item[key]}"
+                               href={list[key]}
                                target="_blank"
                                rel="noopener noreferrer"
                             > {list[key]}</a>
