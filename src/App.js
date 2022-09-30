@@ -1,11 +1,11 @@
 import './App.css';
-import {getListOfRestEndPoint} from './api/anapioficeandfire'
+import {getBooks, getListOfRestEndPoint} from './api/anapioficeandfire'
 import {useState, useEffect} from "react";
 
 function App() {
     const [list, setList] = useState({});
     useEffect(() => {
-        getListOfRestEndPoint().then(data => {
+        getBooks().then(data => {
             setList(data.entity);
         })
     });
