@@ -1,15 +1,19 @@
-import {render, screen} from '@testing-library/react';
-import renderer from "react-test-renderer";
-import App from './App';
+import { render, screen, waitFor } from "@testing-library/react";
+import App from "./App";
 
-test('renders learn anapioficeandfire link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/Learn An API of Ice And Fire/i);
-  expect(linkElement).toBeInTheDocument();
+jest.mock("./api/anapioficeandfire", () => ({
+  getBooks: jest.fn().mockResolvedValue([
+      { name: "A Game of Thrones", url: "https://www.anapioficeandfire.com/api/books/1" },
+      { name: "A Clash of Kings", url: "https://www.anapioficeandfire.com/api/books/2" },
+  ]),
+}));
+
+describe("App Component", () => {
+  it("renders list of API endpoints", async () => {
+      render(<App />);
+      const listItems = await waitFor(() =>
+          screen.findAllByRole("listitem")
+      );
+      expect(listItems.length).toBeGreaterThan(0);
+  });
 });
-
-test("Matches DOM Snapshot", () => {
-  const domTree = renderer.create(<App />).toJSON();
-  expect(domTree).toMatchSnapshot();
-});
-

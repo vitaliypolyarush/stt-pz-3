@@ -1,29 +1,28 @@
-/* eslint-env jest */
+const { getListOfRestEndPoint, getBooks } = require('./anapioficeandfire');
+const mockData = require('../__mocksData__/api.json');
 
-const apiIceAndFire = require('./anapioficeandfire')
-
-jest.mock('./anapioficeandfire', () => {
-    const originalModule = jest.requireActual('./anapioficeandfire');
-    const resp = require('../__mocksData__/api.json')
-    return {
-        __esModule: true,
-        ...originalModule,
-        getListOfRestEndPoint: function () {
-            return new Promise((resolve, reject) => {
-                resolve({entity: resp})
-            })
-        },
-    };
+jest.mock('rest', () => {
+  const mockRequest = jest.fn((url) => {
+    if (url.includes('/books')) {
+      return Promise.resolve({ entity: mockData.books });
+    }
+    if (url.includes('/houses')) {
+      return Promise.resolve({ entity: mockData.houses });
+    }
+    throw new Error(`Unhandled request: ${url}`);
+  });
+  return () => mockRequest;
 });
 
-describe('#getBooks() using Promises', () => {
-    it('should load books data', () => {
-        apiIceAndFire.getListOfRestEndPoint()
-            .then(data => {
-                expect(data.entity.books).toBeDefined()
-                expect(data.entity.books).toEqual('https://www.anapioficeandfire.com/api/books')
-                expect(data.entity.houses).toBeDefined()
-                expect(data.entity.houses).toEqual('https://www.anapioficeandfire.com/api/houses')
-            })
-    })
-})
+describe('API Tests for An API of Ice and Fire', () => {
+  it('should fetch a list of books', async () => {
+    const response = await getBooks();
+    expect(response.entity).toEqual(mockData.books);
+  });
+
+  it('should fetch a list of houses', async () => {
+    const response = await getListOfRestEndPoint();
+    expect(response.entity).toBeDefined();
+    expect(response.entity).toEqual(expect.arrayContaining(mockData.houses));
+  });
+});
